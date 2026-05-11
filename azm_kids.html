@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AZM Kids - عالم الأطفال الممتع</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #FF6B35; --secondary: #4ECDC4; --accent: #FFE66D;
+            --purple: #9B5DE5; --pink: #F15BB5; --blue: #00BBF9;
+            --green: #00F5D4; --dark: #2D3436; --light: #F8F9FA;
+            --logo-green: #4CAF50; --logo-blue: #2196F3;
+            --gradient-1: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+            --gradient-2: linear-gradient(135deg, #4ECDC4 0%, #00BBF9 100%);
+            --gradient-3: linear-gradient(135deg, #9B5DE5 0%, #F15BB5 100%);
+            --gradient-logo: linear-gradient(135deg, #4CAF50 0%, #8BC34A 50%, #2196F3 100%);
+            --shadow-soft: 0 10px 40px rgba(0,0,0,0.1);
+            --shadow-hover: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+        .bg-animation {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 25%, #ffd3b6 50%, #ffaaa5 75%, #ff8b94 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            opacity: 0.08;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .floating-shapes {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; pointer-events: none; overflow: hidden;
+        }
+        .shape {
+            position: absolute; border-radius: 50%; opacity: 0.08;
+            animation: float 20s infinite ease-in-out;
+        }
+        .shape:nth-child(1) { width: 80px; height: 80px; background: var(--logo-green); top: 10%; left: 10%; animation-delay: 0s; }
+        .shape:nth-child(2) { width: 120px; height: 120px; background: var(--logo-blue); top: 70%; left: 80%; animation-delay: 2s; }
+        .shape:nth-child(3) { width: 60px; height: 60px; background: var(--accent); top: 40%; left: 70%; animation-delay: 4s; }
+        .shape:nth-child(4) { width: 100px; height: 100px; background: var(--pink); top: 80%; left: 20%; animation-delay: 6s; }
+        .shape:nth-child(5) { width: 50px; height: 50px; background: var(--secondary); top: 20%; left: 60%; animation-delay: 8s; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(120deg); }
+            66% { transform: translateY(30px) rotate(240deg); }
+        }
+        .header {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            padding: 10px 30px;
+            position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+            border-bottom: 3px solid transparent;
+            border-image: var(--gradient-logo) 1;
+        }
+        .header-content {
+            max-width: 1400px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo {
+            display: flex; align-items: center; gap: 12px; text-decoration: none;
+        }
+        .logo-img {
+            width: 70px; height: 70px;
+            border-radius: 16px;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 4px 12px rgba(76,175,80,0.3));
+        }
+        .logo:hover .logo-img {
+            transform: scale(1.1) rotate(-5deg);
+        }
+        .logo-text {
+            font-size: 32px; font-weight: 900;
+            background: var(--gradient-logo);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .logo-text span {
+            font-size: 16px; font-weight: 500; display: block;
+            color: var(--logo-blue);
+            -webkit-text-fill-color: var(--logo-blue);
+        }
+        .nav-menu {
+            display: flex; gap: 6px; list-style: none;
+        }
+        .nav-link {
+            display: flex; align-items: center; gap: 6px;
+            padding: 10px 16px; border-radius: 12px;
+            text-decoration: none; color: var(--dark);
+            font-weight: 700; font-size: 14px;
+            transition: all 0.3s ease; cursor: pointer;
+            border: none; background: none;
+            font-family: 'Tajawal', sans-serif;
+        }
+        .nav-link:hover, .nav-link.active {
+            background: var(--gradient-logo);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76,175,80,0.3);
+        }
+        .hero {
+            padding: 50px 30px 30px; text-align: center; position: relative; overflow: hidden;
+        }
+        .hero-logo {
+            width: 200px; height: 200px;
+            margin: 0 auto 20px;
+            animation: floatLogo 3s ease-in-out infinite;
+            filter: drop-shadow(0 10px 30px rgba(76,175,80,0.3));
+        }
+        @keyframes floatLogo {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 20px; border-radius: 50px;
+            font-size: 14px; font-weight: 700; color: var(--logo-green);
+            margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            animation: slideDown 0.8s ease;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hero h1 {
+            font-size: 48px; font-weight: 900; margin-bottom: 15px; line-height: 1.2;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+        .hero h1 .highlight {
+            background: var(--gradient-logo);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 20px; color: #666; max-width: 600px; margin: 0 auto 25px;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hero-buttons {
+            display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+        .btn {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 14px 32px; border-radius: 14px;
+            font-size: 16px; font-weight: 700;
+            text-decoration: none; border: none; cursor: pointer;
+            transition: all 0.3s ease; font-family: 'Tajawal', sans-serif;
+        }
+        .btn-primary {
+            background: var(--gradient-logo); color: white;
+            box-shadow: 0 10px 30px rgba(76,175,80,0.4);
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(76,175,80,0.5);
+        }
+        .btn-secondary {
+            background: white; color: var(--dark);
+            border: 2px solid #e0e0e0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .btn-secondary:hover {
+            border-color: var(--logo-green); color: var(--logo-green);
+            transform: translateY(-3px);
+        }
+        .categories {
+            padding: 40px 30px; max-width: 1400px; margin: 0 auto;
+        }
+        .section-title { text-align: center; margin-bottom: 40px; }
+        .section-title h2 { font-size: 36px; font-weight: 900; margin-bottom: 10px; }
+        .section-title p { color: #888; font-size: 18px; }
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+        }
+        .category-card {
+            background: white; border-radius: 24px; padding: 35px 25px;
+            text-align: center; cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: var(--shadow-soft); border: 3px solid transparent;
+            position: relative; overflow: hidden;
+        }
+        .category-card::before {
+            content: ''; position: absolute; top: 0; left: 0;
+            width: 100%; height: 5px; transition: height 0.3s ease;
+        }
+        .category-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-hover);
+        }
+        .category-card:hover::before { height: 100%; opacity: 0.05; }
+        .category-icon {
+            width: 80px; height: 80px; border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 36px; margin: 0 auto 20px;
+            transition: transform 0.3s ease;
+        }
+        .category-card:hover .category-icon { transform: scale(1.1) rotate(-5deg); }
+        .cat-videos .category-icon { background: linear-gradient(135deg, #FF6B35, #F7931E); color: white; }
+        .cat-videos::before { background: linear-gradient(135deg, #FF6B35, #F7931E); }
+        .cat-games .category-icon { background: linear-gradient(135deg, #4ECDC4, #00BBF9); color: white; }
+        .cat-games::before { background: linear-gradient(135deg, #4ECDC4, #00BBF9); }
+        .cat-songs .category-icon { background: linear-gradient(135deg, #9B5DE5, #F15BB5); color: white; }
+        .cat-songs::before { background: linear-gradient(135deg, #9B5DE5, #F15BB5); }
+        .cat-edu .category-icon { background: linear-gradient(135deg, #00F5D4, #00BBF9); color: white; }
+        .cat-edu::before { background: linear-gradient(135deg, #00F5D4, #00BBF9); }
+        .cat-puzzles .category-icon { background: linear-gradient(135deg, #FFE66D, #FF6B35); color: #333; }
+        .cat-puzzles::before { background: linear-gradient(135deg, #FFE66D, #FF6B35); }
+        .category-card h3 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+        .category-card p { font-size: 14px; color: #888; }
+        .category-badge {
+            display: inline-block; padding: 4px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 700; margin-top: 12px;
+        }
+        .cat-videos .category-badge { background: rgba(255,107,53,0.1); color: #FF6B35; }
+        .cat-games .category-badge { background: rgba(78,205,196,0.1); color: #4ECDC4; }
+        .cat-songs .category-badge { background: rgba(155,93,229,0.1); color: #9B5DE5; }
+        .cat-edu .category-badge { background: rgba(0,245,212,0.1); color: #00C9A7; }
+        .cat-puzzles .category-badge { background: rgba(255,230,109,0.2); color: #D4A017; }
+        .content-section {
+            padding: 50px 30px; max-width: 1400px; margin: 0 auto; display: none;
+        }
+        .content-section.active {
+            display: block; animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .section-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px; flex-wrap: wrap; gap: 15px;
+        }
+        .section-header h2 {
+            font-size: 28px; font-weight: 900;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .section-header h2 i {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 20px;
+        }
+        .filter-tabs { display: flex; gap: 10px; flex-wrap: wrap; }
+        .filter-tab {
+            padding: 8px 18px; border-radius: 25px;
+            border: 2px solid #e0e0e0; background: white;
+            font-family: 'Tajawal', sans-serif; font-size: 14px; font-weight: 700;
+            cursor: pointer; transition: all 0.3s ease;
+        }
+        .filter-tab:hover, .filter-tab.active {
+            background: var(--gradient-logo); color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(76,175,80,0.3);
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        .video-card {
+            background: white; border-radius: 20px; overflow: hidden;
+            box-shadow: var(--shadow-soft); transition: all 0.4s ease;
+            cursor: pointer; position: relative;
+        }
+        .video-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+        }
+        .video-thumbnail {
+            position: relative; width: 100%; padding-top: 56.25%;
+            overflow: hidden;
+            background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
+        }
+        .video-thumbnail img {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .video-card:hover .video-thumbnail img { transform: scale(1.1); }
+        .play-overlay {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .video-card:hover .play-overlay { opacity: 1; }
+        .play-btn {
+            width: 60px; height: 60px;
+            background: rgba(255,255,255,0.95); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; color: var(--logo-green);
+            transition: transform 0.3s ease;
+        }
+        .play-btn:hover { transform: scale(1.1); }
+        .video-duration {
+            position: absolute; bottom: 10px; left: 10px;
+            background: rgba(0,0,0,0.8); color: white;
+            padding: 4px 10px; border-radius: 6px;
+            font-size: 12px; font-weight: 700;
+        }
+        .video-info { padding: 18px; }
+        .video-title {
+            font-size: 17px; font-weight: 800; margin-bottom: 8px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .video-meta {
+            display: flex; align-items: center; gap: 15px;
+            color: #888; font-size: 13px; font-weight: 500;
+        }
+        .video-meta i { margin-left: 4px; }
+        .video-tag {
+            display: inline-block; padding: 4px 12px;
+            border-radius: 20px; font-size: 12px; font-weight: 700; margin-top: 10px;
+        }
+        .tag-edu { background: rgba(0,245,212,0.15); color: #00A896; }
+        .tag-song { background: rgba(155,93,229,0.15); color: #7B3DB0; }
+        .tag-game { background: rgba(78,205,196,0.15); color: #2A9D8F; }
+        .tag-fun { background: rgba(255,107,53,0.15); color: #D45A1E; }
+        .modal-overlay {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: none; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex; animation: fadeIn 0.3s ease;
+        }
+        .modal-content {
+            background: white; border-radius: 24px;
+            width: 100%; max-width: 900px; max-height: 90vh;
+            overflow: hidden; position: relative;
+            animation: scaleIn 0.3s ease;
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal-close {
+            position: absolute; top: 15px; left: 15px;
+            width: 40px; height: 40px;
+            background: rgba(0,0,0,0.7); border: none;
+            border-radius: 50%; color: white; font-size: 18px;
+            cursor: pointer; z-index: 10;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .modal-close:hover {
+            background: var(--logo-green); transform: rotate(90deg);
+        }
+        .video-player-container {
+            position: relative; width: 100%; padding-top: 56.25%; background: #000;
+        }
+        .video-player-container iframe {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; border: none;
+        }
+        .modal-info { padding: 25px; }
+        .modal-info h3 { font-size: 24px; font-weight: 900; margin-bottom: 10px; }
+        .modal-info p { color: #666; font-size: 15px; line-height: 1.6; }
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        .game-card {
+            background: white; border-radius: 24px; padding: 30px;
+            text-align: center; box-shadow: var(--shadow-soft);
+            transition: all 0.4s ease; cursor: pointer;
+            border: 3px solid transparent;
+        }
+        .game-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--secondary);
+        }
+        .game-icon {
+            width: 100px; height: 100px; border-radius: 24px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 50px; margin: 0 auto 20px;
+            transition: transform 0.3s ease;
+        }
+        .game-card:hover .game-icon { transform: scale(1.1) rotate(5deg); }
+        .game-card h3 { font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+        .game-card p { color: #888; font-size: 15px; margin-bottom: 15px; }
+        .game-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 24px; border-radius: 12px;
+            font-size: 14px; font-weight: 700;
+            border: none; cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            transition: all 0.3s ease;
+        }
+        .puzzle-container {
+            background: white; border-radius: 24px; padding: 40px;
+            box-shadow: var(--shadow-soft); max-width: 700px; margin: 0 auto;
+        }
+        .puzzle-question {
+            font-size: 24px; font-weight: 800; text-align: center;
+            margin-bottom: 30px; padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 16px; border-right: 5px solid var(--logo-green);
+        }
+        .puzzle-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px; margin-bottom: 25px;
+        }
+        .puzzle-option {
+            padding: 18px; border: 3px solid #e0e0e0;
+            border-radius: 16px; background: white;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 18px; font-weight: 700;
+            cursor: pointer; transition: all 0.3s ease;
+            text-align: center;
+        }
+        .puzzle-option:hover {
+            border-color: var(--secondary);
+            background: rgba(78,205,196,0.05);
+            transform: translateY(-2px);
+        }
+        .puzzle-option.correct {
+            border-color: #00C9A7;
+            background: rgba(0,201,167,0.1);
+            color: #00A896;
+        }
+        .puzzle-option.wrong {
+            border-color: #FF6B6B;
+            background: rgba(255,107,107,0.1);
+            color: #E74C3C;
+            animation: shake 0.5s ease;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .puzzle-score {
+            text-align: center; font-size: 20px; font-weight: 800;
+            color: var(--logo-green); margin-bottom: 20px;
+        }
+        .puzzle-next {
+            display: block; width: 100%; padding: 15px;
+            background: var(--gradient-logo); color: white;
+            border: none; border-radius: 14px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 18px; font-weight: 800;
+            cursor: pointer; transition: all 0.3s ease;
+        }
+        .puzzle-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76,175,80,0.4);
+        }
+        .add-video-form {
+            background: white; border-radius: 24px; padding: 40px;
+            box-shadow: var(--shadow-soft); max-width: 600px; margin: 0 auto;
+        }
+        .form-group { margin-bottom: 25px; }
+        .form-group label {
+            display: block; font-size: 15px; font-weight: 700;
+            margin-bottom: 8px; color: var(--dark);
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%; padding: 14px 18px;
+            border: 2px solid #e0e0e0; border-radius: 14px;
+            font-family: 'Tajawal', sans-serif; font-size: 15px;
+            transition: all 0.3s ease; background: #fafafa;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none; border-color: var(--logo-green);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(76,175,80,0.1);
+        }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .submit-btn {
+            width: 100%; padding: 16px;
+            background: var(--gradient-logo); color: white;
+            border: none; border-radius: 14px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 18px; font-weight: 800;
+            cursor: pointer; transition: all 0.3s ease;
+            display: flex; align-items: center;
+            justify-content: center; gap: 10px;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(76,175,80,0.4);
+        }
+        .success-message {
+            display: none;
+            background: rgba(0,201,167,0.1); color: #00A896;
+            padding: 15px; border-radius: 12px;
+            text-align: center; font-weight: 700;
+            margin-top: 20px; border: 2px solid #00C9A7;
+        }
+        .success-message.show {
+            display: block; animation: fadeIn 0.5s ease;
+        }
+        .loading-spinner {
+            display: none; text-align: center; padding: 40px;
+        }
+        .loading-spinner.active { display: block; }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 4px solid #e0e0e0;
+            border-top-color: var(--logo-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .supabase-status {
+            position: fixed; bottom: 20px; left: 20px;
+            padding: 10px 18px; border-radius: 12px;
+            font-size: 13px; font-weight: 700;
+            z-index: 9999; display: flex; align-items: center; gap: 8px;
+            transition: all 0.3s ease;
+        }
+        .supabase-status.connected {
+            background: rgba(0,201,167,0.15); color: #00A896;
+            border: 2px solid #00C9A7;
+        }
+        .supabase-status.disconnected {
+            background: rgba(255,107,53,0.15); color: #D45A1E;
+            border: 2px solid #FF6B35;
+        }
+        .footer {
+            background: var(--dark); color: white;
+            padding: 50px 30px 30px; margin-top: 60px;
+        }
+        .footer-content {
+            max-width: 1400px; margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+        .footer-brand {
+            display: flex; align-items: center; gap: 12px; margin-bottom: 15px;
+        }
+        .footer-brand .logo-img {
+            width: 50px; height: 50px;
+            filter: drop-shadow(0 2px 8px rgba(76,175,80,0.3));
+        }
+        .footer-brand h3 { font-size: 24px; font-weight: 900; }
+        .footer-desc { color: #aaa; font-size: 15px; line-height: 1.7; }
+        .footer-links h4 {
+            font-size: 18px; font-weight: 800;
+            margin-bottom: 20px; color: var(--accent);
+        }
+        .footer-links ul { list-style: none; }
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a {
+            color: #aaa; text-decoration: none; font-size: 15px;
+            transition: color 0.3s ease;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .footer-links a:hover { color: var(--accent); }
+        .footer-bottom {
+            max-width: 1400px; margin: 40px auto 0;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center; color: #888; font-size: 14px;
+        }
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; gap: 15px; }
+            .nav-menu { flex-wrap: wrap; justify-content: center; }
+            .hero h1 { font-size: 32px; }
+            .hero p { font-size: 16px; }
+            .hero-logo { width: 150px; height: 150px; }
+            .category-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+            .category-card { padding: 25px 15px; }
+            .video-grid { grid-template-columns: 1fr; }
+            .section-header { flex-direction: column; text-align: center; }
+            .puzzle-options { grid-template-columns: 1fr; }
+        }
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: var(--gradient-logo); border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--logo-green); }
+        .confetti {
+            position: fixed; width: 10px; height: 10px;
+            top: -10px; animation: confetti-fall 3s linear forwards;
+            z-index: 3000; pointer-events: none;
+        }
+        @keyframes confetti-fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        .setup-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 20px 30px; text-align: center;
+            border-radius: 16px; margin-bottom: 30px;
+        }
+        .setup-banner h3 { font-size: 22px; margin-bottom: 10px; }
+        .setup-banner p { font-size: 15px; opacity: 0.9; margin-bottom: 15px; }
+        .setup-input {
+            padding: 12px 18px; border-radius: 10px; border: none;
+            font-family: 'Tajawal', sans-serif; font-size: 14px;
+            width: 300px; max-width: 100%; margin: 0 5px;
+        }
+        .setup-btn {
+            padding: 12px 24px; border-radius: 10px; border: none;
+            background: white; color: #667eea;
+            font-family: 'Tajawal', sans-serif; font-size: 14px;
+            font-weight: 800; cursor: pointer; transition: all 0.3s ease;
+        }
+        .setup-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body>
+
+    <div class="bg-animation"></div>
+    <div class="floating-shapes">
+        <div class="shape"></div><div class="shape"></div><div class="shape"></div><div class="shape"></div><div class="shape"></div>
+    </div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="logo" onclick="showSection('home')">
+                <img src="logo.png" class="logo-img" alt="AZM Kids Logo" id="header-logo">
+                <div class="logo-text">AZM Kids<span>عالم الأطفال الممتع</span></div>
+            </a>
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item"><button class="nav-link active" onclick="showSection('home')" data-section="home"><i class="fas fa-home"></i> الرئيسية</button></li>
+                    <li class="nav-item"><button class="nav-link" onclick="showSection('videos')" data-section="videos"><i class="fas fa-video"></i> الفيديوهات</button></li>
+                    <li class="nav-item"><button class="nav-link" onclick="showSection('games')" data-section="games"><i class="fas fa-gamepad"></i> الألعاب</button></li>
+                    <li class="nav-item"><button class="nav-link" onclick="showSection('songs')" data-section="songs"><i class="fas fa-music"></i> الأغاني</button></li>
+                    <li class="nav-item"><button class="nav-link" onclick="showSection('edu')" data-section="edu"><i class="fas fa-graduation-cap"></i> تعليمي</button></li>
+                    <li class="nav-item"><button class="nav-link" onclick="showSection('puzzles')" data-section="puzzles"><i class="fas fa-puzzle-piece"></i> الألغاز</button></li>
+                    <li class="nav-item"><button class="nav-link" onclick="showSection('add')" data-section="add"><i class="fas fa-plus-circle"></i> أضف فيديو</button></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div id="home" class="content-section active">
+        <div class="hero">
+            <img src="logo.png" class="hero-logo" alt="AZM Kids">
+            <div class="hero-badge"><i class="fas fa-star" style="color: #FFD700;"></i> منصة AZM Kids - ترفيه وتعليم بأمان</div>
+            <h1>عالم مليء بال<span class="highlight">المتعة والتعلم</span> لأطفالك</h1>
+            <p>استمتعوا بمجموعة رائعة من الفيديوهات التعليمية والألعاب والأغاني والألغاز المصممة خصيصاً لأطفالكم في بيئة آمنة وجذابة</p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="showSection('videos')"><i class="fas fa-play"></i> ابدأ المشاهدة</button>
+                <button class="btn btn-secondary" onclick="showSection('games')"><i class="fas fa-gamepad"></i> العب الآن</button>
+            </div>
+        </div>
+        <div class="categories">
+            <div class="section-title"><h2>🎯 اكتشف الأقسام</h2><p>اختر ما يعجبك من محتوى متنوع وممتع</p></div>
+            <div class="category-grid">
+                <div class="category-card cat-videos" onclick="showSection('videos')"><div class="category-icon"><i class="fas fa-video"></i></div><h3>فيديوهات</h3><p>مقاطع فيديو ترفيهية وتعليمية</p><span class="category-badge">+50 فيديو</span></div>
+                <div class="category-card cat-games" onclick="showSection('games')"><div class="category-icon"><i class="fas fa-gamepad"></i></div><h3>ألعاب</h3><p>ألعاب تفاعلية مسلية</p><span class="category-badge">+10 ألعاب</span></div>
+                <div class="category-card cat-songs" onclick="showSection('songs')"><div class="category-icon"><i class="fas fa-music"></i></div><h3>أغاني</h3><p>أغاني أطفال ممتعة وهادفة</p><span class="category-badge">+30 أغنية</span></div>
+                <div class="category-card cat-edu" onclick="showSection('edu')"><div class="category-icon"><i class="fas fa-graduation-cap"></i></div><h3>تعليمي</h3><p>دروس ومحتوى تعليمي شيق</p><span class="category-badge">+40 درس</span></div>
+                <div class="category-card cat-puzzles" onclick="showSection('puzzles')"><div class="category-icon"><i class="fas fa-puzzle-piece"></i></div><h3>ألغاز</h3><p>اختبر ذكائك مع الألغاز</p><span class="category-badge">+20 لغز</span></div>
+            </div>
+        </div>
+        <div class="categories">
+            <div class="section-header"><h2><i class="fas fa-fire" style="background: var(--gradient-logo);"></i> الأكثر مشاهدة</h2></div>
+            <div class="loading-spinner" id="featured-loading"><div class="spinner"></div><p>جاري التحميل من Supabase...</p></div>
+            <div class="video-grid" id="featured-videos"></div>
+        </div>
+    </div>
+
+    <div id="videos" class="content-section">
+        <div class="section-header">
+            <h2><i class="fas fa-video" style="background: var(--gradient-logo);"></i> جميع الفيديوهات</h2>
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterVideos('all')">الكل</button>
+                <button class="filter-tab" onclick="filterVideos('edu')">تعليمي</button>
+                <button class="filter-tab" onclick="filterVideos('song')">أغاني</button>
+                <button class="filter-tab" onclick="filterVideos('fun')">ترفيه</button>
+            </div>
+        </div>
+        <div class="loading-spinner" id="videos-loading"><div class="spinner"></div><p>جاري التحميل من Supabase...</p></div>
+        <div class="video-grid" id="all-videos"></div>
+    </div>
+
+    <div id="games" class="content-section">
+        <div class="section-header"><h2><i class="fas fa-gamepad" style="background: var(--gradient-2);"></i> الألعاب التفاعلية</h2></div>
+        <div class="games-grid">
+            <div class="game-card" onclick="alert('سيتم توفير اللعبة قريباً! 🎮')"><div class="game-icon" style="background: linear-gradient(135deg, #FF6B35, #F7931E);">🎨</div><h3>لوحة الرسم</h3><p>ارسم وأبدع بألوانك المفضلة</p><button class="game-btn" style="background: linear-gradient(135deg, #FF6B35, #F7931E); color: white;">العب الآن <i class="fas fa-play"></i></button></div>
+            <div class="game-card" onclick="alert('سيتم توفير اللعبة قريباً! 🎮')"><div class="game-icon" style="background: linear-gradient(135deg, #4ECDC4, #00BBF9);">🧮</div><h3>رياضيات ممتعة</h3><p>تعلم الأرقام والحساب باللعب</p><button class="game-btn" style="background: linear-gradient(135deg, #4ECDC4, #00BBF9); color: white;">العب الآن <i class="fas fa-play"></i></button></div>
+            <div class="game-card" onclick="alert('سيتم توفير اللعبة قريباً! 🎮')"><div class="game-icon" style="background: linear-gradient(135deg, #9B5DE5, #F15BB5);">🧩</div><h3>تركيب الصور</h3><p>حل الألغاز المرئية الممتعة</p><button class="game-btn" style="background: linear-gradient(135deg, #9B5DE5, #F15BB5); color: white;">العب الآن <i class="fas fa-play"></i></button></div>
+            <div class="game-card" onclick="alert('سيتم توفير اللعبة قريباً! 🎮')"><div class="game-icon" style="background: linear-gradient(135deg, #00F5D4, #00BBF9);">🎵</div><h3>عزف الموسيقى</h3><p>تعلم النوتات والعزف</p><button class="game-btn" style="background: linear-gradient(135deg, #00F5D4, #00BBF9); color: white;">العب الآن <i class="fas fa-play"></i></button></div>
+            <div class="game-card" onclick="alert('سيتم توفير اللعبة قريباً! 🎮')"><div class="game-icon" style="background: linear-gradient(135deg, #FFE66D, #FF6B35);">🌍</div><h3>استكشاف العالم</h3><p>رحلة حول العالم للتعرف على الحيوانات</p><button class="game-btn" style="background: linear-gradient(135deg, #FFE66D, #FF6B35); color: #333;">العب الآن <i class="fas fa-play"></i></button></div>
+            <div class="game-card" onclick="alert('سيتم توفير اللعبة قريباً! 🎮')"><div class="game-icon" style="background: linear-gradient(135deg, #FF6B6B, #F15BB5);">🚀</div><h3>رحلة الفضاء</h3><p>اكتشف الكواكب والنجوم</p><button class="game-btn" style="background: linear-gradient(135deg, #FF6B6B, #F15BB5); color: white;">العب الآن <i class="fas fa-play"></i></button></div>
+        </div>
+    </div>
+
+    <div id="songs" class="content-section">
+        <div class="section-header">
+            <h2><i class="fas fa-music" style="background: var(--gradient-3);"></i> أغاني الأطفال</h2>
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterSongs('all')">الكل</button>
+                <button class="filter-tab" onclick="filterSongs('nursery')">أناشيد</button>
+                <button class="filter-tab" onclick="filterSongs('islamic')">إسلامية</button>
+                <button class="filter-tab" onclick="filterSongs('educational')">تعليمية</button>
+            </div>
+        </div>
+        <div class="loading-spinner" id="songs-loading"><div class="spinner"></div><p>جاري التحميل من Supabase...</p></div>
+        <div class="video-grid" id="songs-grid"></div>
+    </div>
+
+    <div id="edu" class="content-section">
+        <div class="section-header">
+            <h2><i class="fas fa-graduation-cap" style="background: linear-gradient(135deg, #00F5D4, #00BBF9);"></i> محتوى تعليمي</h2>
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterEdu('all')">الكل</button>
+                <button class="filter-tab" onclick="filterEdu('math')">رياضيات</button>
+                <button class="filter-tab" onclick="filterEdu('science')">علوم</button>
+                <button class="filter-tab" onclick="filterEdu('language')">لغة عربية</button>
+                <button class="filter-tab" onclick="filterEdu('english')">English</button>
+            </div>
+        </div>
+        <div class="loading-spinner" id="edu-loading"><div class="spinner"></div><p>جاري التحميل من Supabase...</p></div>
+        <div class="video-grid" id="edu-grid"></div>
+    </div>
+
+    <div id="puzzles" class="content-section">
+        <div class="section-header"><h2><i class="fas fa-puzzle-piece" style="background: linear-gradient(135deg, #FFE66D, #FF6B35);"></i> الألغاز والمسابقات</h2></div>
+        <div class="puzzle-container">
+            <div class="puzzle-score" id="puzzle-score"><i class="fas fa-trophy" style="color: #FFD700;"></i> النقاط: <span id="score-value">0</span> | السؤال <span id="question-num">1</span>/10</div>
+            <div class="puzzle-question" id="puzzle-question">جاري تحميل السؤال...</div>
+            <div class="puzzle-options" id="puzzle-options"></div>
+            <button class="puzzle-next" id="puzzle-next" onclick="nextPuzzle()" style="display:none;">السؤال التالي <i class="fas fa-arrow-left"></i></button>
+        </div>
+    </div>
+
+    <div id="add" class="content-section">
+        <div class="section-header"><h2><i class="fas fa-plus-circle" style="background: var(--gradient-logo);"></i> أضف فيديو جديد</h2></div>
+
+        <!-- Supabase Setup Banner -->
+        <div class="setup-banner" id="setup-banner" style="display:none;">
+            <h3><i class="fas fa-database"></i> ربط Supabase</h3>
+            <p>أدخل بيانات Supabase الخاصة بك لتفعيل حفظ الفيديوهات في قاعدة البيانات</p>
+            <input type="text" class="setup-input" id="sb-url" placeholder="Supabase URL (مثال: https://xxxxx.supabase.co)">
+            <input type="text" class="setup-input" id="sb-key" placeholder="Supabase Anon Key">
+            <button class="setup-btn" onclick="connectSupabase()">ربط <i class="fas fa-link"></i></button>
+        </div>
+
+        <div class="add-video-form">
+            <div class="form-group"><label><i class="fas fa-heading"></i> عنوان الفيديو</label><input type="text" id="video-title" placeholder="أدخل عنوان الفيديو..."></div>
+            <div class="form-group"><label><i class="fas fa-link"></i> رابط YouTube</label><input type="url" id="video-url" placeholder="https://www.youtube.com/watch?v=... أو رابط مختصر"></div>
+            <div class="form-group"><label><i class="fas fa-tags"></i> التصنيف</label><select id="video-category"><option value="edu">تعليمي</option><option value="song">أغاني</option><option value="game">ألعاب</option><option value="fun">ترفيه</option></select></div>
+            <div class="form-group"><label><i class="fas fa-image"></i> وصف الفيديو</label><textarea id="video-desc" placeholder="أضف وصفاً مختصراً للفيديو..."></textarea></div>
+            <button class="submit-btn" onclick="addVideo()"><i class="fas fa-plus"></i> إضافة الفيديو</button>
+            <div class="success-message" id="success-msg"><i class="fas fa-check-circle"></i> تم إضافة الفيديو بنجاح! 🎉</div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="video-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            <div class="video-player-container"><iframe id="video-iframe" src="" allowfullscreen></iframe></div>
+            <div class="modal-info"><h3 id="modal-title">عنوان الفيديو</h3><p id="modal-desc">وصف الفيديو</p></div>
+        </div>
+    </div>
+
+    <!-- Supabase Status Indicator -->
+    <div class="supabase-status disconnected" id="sb-status">
+        <i class="fas fa-wifi"></i> Supabase: غير متصل (وضع محلي)
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div>
+                <div class="footer-brand">
+                    <img src="logo.png" class="logo-img" alt="AZM Kids">
+                    <h3>AZM Kids</h3>
+                </div>
+                <p class="footer-desc">منصة آمنة وممتعة للأطفال، تجمع بين التعليم والترفيه في بيئة محفزة على الإبداع والتعلم.</p>
+            </div>
+            <div class="footer-links"><h4>استكشف</h4><ul><li><a href="#" onclick="showSection('videos')"><i class="fas fa-video"></i> الفيديوهات</a></li><li><a href="#" onclick="showSection('games')"><i class="fas fa-gamepad"></i> الألعاب</a></li><li><a href="#" onclick="showSection('songs')"><i class="fas fa-music"></i> الأغاني</a></li><li><a href="#" onclick="showSection('edu')"><i class="fas fa-graduation-cap"></i> تعليمي</a></li></ul></div>
+            <div class="footer-links"><h4>المساعدة</h4><ul><li><a href="#"><i class="fas fa-shield-alt"></i> السلامة للأطفال</a></li><li><a href="#"><i class="fas fa-question-circle"></i> الأسئلة الشائعة</a></li><li><a href="#"><i class="fas fa-envelope"></i> تواصل معنا</a></li><li><a href="#"><i class="fas fa-info-circle"></i> عن المنصة</a></li></ul></div>
+            <div class="footer-links"><h4>تابعنا</h4><ul><li><a href="#"><i class="fab fa-youtube"></i> يوتيوب</a></li><li><a href="#"><i class="fab fa-instagram"></i> انستغرام</a></li><li><a href="#"><i class="fab fa-tiktok"></i> تيك توك</a></li><li><a href="#"><i class="fab fa-facebook"></i> فيسبوك</a></li></ul></div>
+        </div>
+        <div class="footer-bottom"><p>© 2024 AZM Kids - جميع الحقوق محفوظة | منصة آمنة للأطفال</p></div>
+    </footer>
+
+<script>
+// ===== SUPABASE CONFIGURATION =====
+// Replace these with your actual Supabase credentials after setup
+const SUPABASE_URL = localStorage.getItem('sb_url') || '';
+const SUPABASE_KEY = localStorage.getItem('sb_key') || '';
+let supabase = null;
+let isSupabaseConnected = false;
+
+// Initialize Supabase if credentials exist
+if (SUPABASE_URL && SUPABASE_KEY) {
+    try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        isSupabaseConnected = true;
+        updateStatus(true);
+    } catch (e) {
+        console.error('Supabase init error:', e);
+        updateStatus(false);
+    }
+} else {
+    document.getElementById('setup-banner').style.display = 'block';
+}
+
+function updateStatus(connected) {
+    const status = document.getElementById('sb-status');
+    if (connected) {
+        status.className = 'supabase-status connected';
+        status.innerHTML = '<i class="fas fa-wifi"></i> Supabase: متصل ✅';
+        document.getElementById('setup-banner').style.display = 'none';
+    } else {
+        status.className = 'supabase-status disconnected';
+        status.innerHTML = '<i class="fas fa-wifi"></i> Supabase: غير متصل (وضع محلي)';
+    }
+}
+
+function connectSupabase() {
+    const url = document.getElementById('sb-url').value.trim();
+    const key = document.getElementById('sb-key').value.trim();
+
+    if (!url || !key) {
+        alert('الرجاء إدخال URL و API Key');
+        return;
+    }
+
+    localStorage.setItem('sb_url', url);
+    localStorage.setItem('sb_key', key);
+
+    try {
+        supabase = window.supabase.createClient(url, key);
+        isSupabaseConnected = true;
+        updateStatus(true);
+        alert('✅ تم الربط بـ Supabase بنجاح!');
+        location.reload();
+    } catch (e) {
+        alert('❌ خطأ في الربط: ' + e.message);
+    }
+}
+
+// ===== DATA (Local fallback + Supabase) =====
+const defaultVideos = [
+    { id: '1', title: 'تعلم الألوان بالعربية - أغنية ممتعة', url: 'https://www.youtube.com/embed/9C1Y0bQZtJQ', thumbnail: 'https://img.youtube.com/vi/9C1Y0bQZtJQ/maxresdefault.jpg', category: 'edu', tag: 'تعليمي', tagClass: 'tag-edu', duration: '3:45', views: '125K', desc: 'تعلم الألوان الأساسية مع هذه الأغنية الممتعة والتفاعلية للأطفال' },
+    { id: '2', title: 'أغنية الحروف العربية - أنشودة تعليمية', url: 'https://www.youtube.com/embed/6_IZaR_4sZw', thumbnail: 'https://img.youtube.com/vi/6_IZaR_4sZw/maxresdefault.jpg', category: 'song', tag: 'أغاني', tagClass: 'tag-song', duration: '4:20', views: '89K', desc: 'أنشودة رائعة لتعلم الحروف العربية بطريقة ممتعة' },
+    { id: '3', title: 'حساب الأعداد - درس رياضيات للأطفال', url: 'https://www.youtube.com/embed/0T0QrPL0U-8', thumbnail: 'https://img.youtube.com/vi/0T0QrPL0U-8/maxresdefault.jpg', category: 'edu', tag: 'تعليمي', tagClass: 'tag-edu', duration: '5:15', views: '67K', desc: 'تعلم الجمع والطرح بطريقة سهلة وممتعة' },
+    { id: '4', title: 'قصة النحلة والدب - قصة قبل النوم', url: 'https://www.youtube.com/embed/5oH8Yr8rG4A', thumbnail: 'https://img.youtube.com/vi/5oH8Yr8rG4A/maxresdefault.jpg', category: 'fun', tag: 'ترفيه', tagClass: 'tag-fun', duration: '8:30', views: '234K', desc: 'قصة جميلة عن الصداقة والتعاون بين النحلة والدب' },
+    { id: '5', title: 'أغنية أيام الأسبوع - تعلم الأيام', url: 'https://www.youtube.com/embed/mXMzJ9VwT4w', thumbnail: 'https://img.youtube.com/vi/mXMzJ9VwT4w/maxresdefault.jpg', category: 'song', tag: 'أغاني', tagClass: 'tag-song', duration: '2:50', views: '156K', desc: 'تعلم أيام الأسبوع مع هذه الأغنية المشوقة' },
+    { id: '6', title: 'الحيوانات المفترسة - عالم الحيوانات', url: 'https://www.youtube.com/embed/8rlytgjkddU', thumbnail: 'https://img.youtube.com/vi/8rlytgjkddU/maxresdefault.jpg', category: 'edu', tag: 'تعليمي', tagClass: 'tag-edu', duration: '6:40', views: '198K', desc: 'اكتشف عالم الحيوانات المفترسة وموائلها الطبيعية' },
+    { id: '7', title: 'أغنية الأرقام من 1 إلى 10', url: 'https://www.youtube.com/embed/DR-cfDsHCqE', thumbnail: 'https://img.youtube.com/vi/DR-cfDsHCqE/maxresdefault.jpg', category: 'song', tag: 'أغاني', tagClass: 'tag-song', duration: '3:15', views: '312K', desc: 'تعلم الأرقام من واحد إلى عشرة بالغناء والرقص' },
+    { id: '8', title: 'تجربة علمية - كيف تمطر السحاب؟', url: 'https://www.youtube.com/embed/5o8CwafC8-U', thumbnail: 'https://img.youtube.com/vi/5o8CwafC8-U/maxresdefault.jpg', category: 'edu', tag: 'تعليمي', tagClass: 'tag-edu', duration: '4:55', views: '145K', desc: 'تجربة علمية ممتعة لشرح دورة الماء والمطر' },
+    { id: '9', title: 'لعبة الذاكرة - اختبر ذاكرتك', url: 'https://www.youtube.com/embed/3Kq1MIfTWCE', thumbnail: 'https://img.youtube.com/vi/3Kq1MIfTWCE/maxresdefault.jpg', category: 'game', tag: 'ألعاب', tagClass: 'tag-game', duration: '10:00', views: '78K', desc: 'لعبة تفاعلية لتقوية الذاكرة والتركيز' },
+    { id: '10', title: 'أنشودة صلاة الفجر - أناشيد إسلامية', url: 'https://www.youtube.com/embed/1Vf2m8f5-3k', thumbnail: 'https://img.youtube.com/vi/1Vf2m8f5-3k/maxresdefault.jpg', category: 'song', tag: 'أغاني', tagClass: 'tag-song', duration: '3:30', views: '267K', desc: 'أنشودة جميلة عن فضل صلاة الفجر للأطفال' },
+    { id: '11', title: 'رسم القطة - درس رسم للمبتدئين', url: 'https://www.youtube.com/embed/9C1Y0bQZtJQ', thumbnail: 'https://img.youtube.com/vi/9C1Y0bQZtJQ/maxresdefault.jpg', category: 'edu', tag: 'تعليمي', tagClass: 'tag-edu', duration: '7:20', views: '189K', desc: 'تعلم رسم قطة خطوة بخطوة بطريقة سهلة' },
+    { id: '12', title: 'أغنية النظافة - غسل اليدين', url: 'https://www.youtube.com/embed/6_IZaR_4sZw', thumbnail: 'https://img.youtube.com/vi/6_IZaR_4sZw/maxresdefault.jpg', category: 'song', tag: 'أغاني', tagClass: 'tag-song', duration: '2:40', views: '445K', desc: 'أغنية ممتعة عن أهمية غسل اليدين والنظافة' }
+];
+
+const defaultSongs = [
+    { id: 's1', title: 'أغنية الحروف العربية', url: 'https://www.youtube.com/embed/6_IZaR_4sZw', thumbnail: 'https://img.youtube.com/vi/6_IZaR_4sZw/maxresdefault.jpg', subcategory: 'nursery', tag: 'أناشيد', tagClass: 'tag-song', duration: '4:20', views: '89K', desc: 'أنشودة رائعة لتعلم الحروف العربية' },
+    { id: 's2', title: 'أغنية الأرقام 1-10', url: 'https://www.youtube.com/embed/DR-cfDsHCqE', thumbnail: 'https://img.youtube.com/vi/DR-cfDsHCqE/maxresdefault.jpg', subcategory: 'nursery', tag: 'أناشيد', tagClass: 'tag-song', duration: '3:15', views: '312K', desc: 'تعلم الأرقام بالغناء والرقص' },
+    { id: 's3', title: 'أنشودة صلاة الفجر', url: 'https://www.youtube.com/embed/1Vf2m8f5-3k', thumbnail: 'https://img.youtube.com/vi/1Vf2m8f5-3k/maxresdefault.jpg', subcategory: 'islamic', tag: 'إسلامية', tagClass: 'tag-song', duration: '3:30', views: '267K', desc: 'أنشودة جميلة عن فضل صلاة الفجر' },
+    { id: 's4', title: 'أغنية النظافة والصحة', url: 'https://www.youtube.com/embed/6_IZaR_4sZw', thumbnail: 'https://img.youtube.com/vi/6_IZaR_4sZw/maxresdefault.jpg', subcategory: 'educational', tag: 'تعليمية', tagClass: 'tag-song', duration: '2:40', views: '445K', desc: 'تعلم أهمية النظافة بالغناء' },
+    { id: 's5', title: 'أنشودة رمضان', url: 'https://www.youtube.com/embed/1Vf2m8f5-3k', thumbnail: 'https://img.youtube.com/vi/1Vf2m8f5-3k/maxresdefault.jpg', subcategory: 'islamic', tag: 'إسلامية', tagClass: 'tag-song', duration: '5:00', views: '189K', desc: 'أنشودة رمضانية مباركة للأطفال' },
+    { id: 's6', title: 'أغنية أيام الأسبوع', url: 'https://www.youtube.com/embed/mXMzJ9VwT4w', thumbnail: 'https://img.youtube.com/vi/mXMzJ9VwT4w/maxresdefault.jpg', subcategory: 'educational', tag: 'تعليمية', tagClass: 'tag-song', duration: '2:50', views: '156K', desc: 'تعلم أيام الأسبوع بسهولة' },
+    { id: 's7', title: 'أغنية الأشكال الهندسية', url: 'https://www.youtube.com/embed/DR-cfDsHCqE', thumbnail: 'https://img.youtube.com/vi/DR-cfDsHCqE/maxresdefault.jpg', subcategory: 'educational', tag: 'تعليمية', tagClass: 'tag-song', duration: '3:10', views: '98K', desc: 'تعلم الأشكال الهندسية بالغناء' },
+    { id: 's8', title: 'أنشودة الصلاة على النبي', url: 'https://www.youtube.com/embed/1Vf2m8f5-3k', thumbnail: 'https://img.youtube.com/vi/1Vf2m8f5-3k/maxresdefault.jpg', subcategory: 'islamic', tag: 'إسلامية', tagClass: 'tag-song', duration: '2:20', views: '534K', desc: 'أنشودة جميلة للصلاة على النبي محمد' }
+];
+
+const defaultEdu = [
+    { id: 'e1', title: 'تعلم الألوان الأساسية', url: 'https://www.youtube.com/embed/9C1Y0bQZtJQ', thumbnail: 'https://img.youtube.com/vi/9C1Y0bQZtJQ/maxresdefault.jpg', subcategory: 'language', tag: 'لغة عربية', tagClass: 'tag-edu', duration: '3:45', views: '125K', desc: 'تعلم الألوان باللغة العربية' },
+    { id: 'e2', title: 'حساب الأعداد للأطفال', url: 'https://www.youtube.com/embed/0T0QrPL0U-8', thumbnail: 'https://img.youtube.com/vi/0T0QrPL0U-8/maxresdefault.jpg', subcategory: 'math', tag: 'رياضيات', tagClass: 'tag-edu', duration: '5:15', views: '67K', desc: 'تعلم الجمع والطرح بسهولة' },
+    { id: 'e3', title: 'عالم الحيوانات المفترسة', url: 'https://www.youtube.com/embed/8rlytgjkddU', thumbnail: 'https://img.youtube.com/vi/8rlytgjkddU/maxresdefault.jpg', subcategory: 'science', tag: 'علوم', tagClass: 'tag-edu', duration: '6:40', views: '198K', desc: 'اكتشف عالم الحيوانات' },
+    { id: 'e4', title: 'دورة الماء في الطبيعة', url: 'https://www.youtube.com/embed/5o8CwafC8-U', thumbnail: 'https://img.youtube.com/vi/5o8CwafC8-U/maxresdefault.jpg', subcategory: 'science', tag: 'علوم', tagClass: 'tag-edu', duration: '4:55', views: '145K', desc: 'تعلم كيفية تكون المطر' },
+    { id: 'e5', title: 'تعلم الحروف الإنجليزية', url: 'https://www.youtube.com/embed/DR-cfDsHCqE', thumbnail: 'https://img.youtube.com/vi/DR-cfDsHCqE/maxresdefault.jpg', subcategory: 'english', tag: 'English', tagClass: 'tag-edu', duration: '4:30', views: '234K', desc: 'تعلم ABC بالإنجليزية' },
+    { id: 'e6', title: 'الأعداد الزوجية والفردية', url: 'https://www.youtube.com/embed/0T0QrPL0U-8', thumbnail: 'https://img.youtube.com/vi/0T0QrPL0U-8/maxresdefault.jpg', subcategory: 'math', tag: 'رياضيات', tagClass: 'tag-edu', duration: '3:50', views: '89K', desc: 'تعلم الفرق بين الزوجي والفردي' },
+    { id: 'e7', title: 'النظام الشمسي', url: 'https://www.youtube.com/embed/8rlytgjkddU', thumbnail: 'https://img.youtube.com/vi/8rlytgjkddU/maxresdefault.jpg', subcategory: 'science', tag: 'علوم', tagClass: 'tag-edu', duration: '7:10', views: '312K', desc: 'رحلة في الفضاء لاكتشاف الكواكب' },
+    { id: 'e8', title: 'الكلمات البصرية', url: 'https://www.youtube.com/embed/9C1Y0bQZtJQ', thumbnail: 'https://img.youtube.com/vi/9C1Y0bQZtJQ/maxresdefault.jpg', subcategory: 'language', tag: 'لغة عربية', tagClass: 'tag-edu', duration: '5:20', views: '178K', desc: 'تعلم القراءة السريعة' }
+];
+
+const puzzles = [
+    { question: 'ما هو الحيوان الذي يلقب بسفينة الصحراء؟', options: ['الحصان', 'الجمل', 'الفيل', 'الزرافة'], correct: 1 },
+    { question: 'كم عدد أيام الأسبوع؟', options: ['5', '6', '7', '8'], correct: 2 },
+    { question: 'ما هو لون السماء في النهار الصافي؟', options: ['أحمر', 'أخضر', 'أزرق', 'أصفر'], correct: 2 },
+    { question: 'كم عدد أصابع اليد الواحدة؟', options: ['4', '5', '6', '10'], correct: 1 },
+    { question: 'ما هو الحيوان الأكبر في العالم؟', options: ['الفيل', 'الحوت الأزرق', 'الزرافة', 'الديناصور'], correct: 1 },
+    { question: 'في أي فصل يتساقط الثلج؟', options: ['الصيف', 'الربيع', 'الخريف', 'الشتاء'], correct: 3 },
+    { question: 'كم عدد حروف اللغة العربية؟', options: ['26', '28', '30', '32'], correct: 1 },
+    { question: 'ما هو لون الورود الطبيعي الأكثر شيوعاً؟', options: ['أحمر', 'أزرق', 'أصفر', 'أبيض'], correct: 0 },
+    { question: 'كم عدد ألوان قوس قزح؟', options: ['5', '6', '7', '8'], correct: 2 },
+    { question: 'ما هو الحيوان الذي يعيش في الماء وعلى اليابسة؟', options: ['السمكة', 'الضفدع', 'التمساح', 'الدلفين'], correct: 1 }
+];
+
+let currentPuzzle = 0;
+let score = 0;
+let allVideos = [...defaultVideos];
+let allSongs = [...defaultSongs];
+let allEdu = [...defaultEdu];
+
+// ===== SUPABASE FUNCTIONS =====
+async function loadVideosFromSupabase() {
+    if (!isSupabaseConnected) return;
+    try {
+        const { data, error } = await supabase.from('videos').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+        if (data && data.length > 0) {
+            const supabaseVideos = data.map(v => ({
+                id: v.id,
+                title: v.title,
+                url: v.url,
+                thumbnail: v.thumbnail || `https://img.youtube.com/vi/${extractVideoId(v.url)}/maxresdefault.jpg`,
+                category: v.category,
+                tag: v.tag,
+                tagClass: 'tag-' + v.category,
+                duration: v.duration || 'جديد',
+                views: v.views || '0',
+                desc: v.desc || ''
+            }));
+            allVideos = [...supabaseVideos, ...defaultVideos];
+        }
+    } catch (e) {
+        console.log('Using local videos:', e.message);
+    }
+}
+
+async function saveVideoToSupabase(video) {
+    if (!isSupabaseConnected) return false;
+    try {
+        const { error } = await supabase.from('videos').insert([{
+            title: video.title,
+            url: video.url,
+            thumbnail: video.thumbnail,
+            category: video.category,
+            tag: video.tag,
+            duration: video.duration,
+            views: video.views,
+            desc: video.desc
+        }]);
+        if (error) throw error;
+        return true;
+    } catch (e) {
+        console.error('Save error:', e);
+        return false;
+    }
+}
+
+function extractVideoId(url) {
+    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+    return match ? match[1] : '';
+}
+
+// ===== NAVIGATION =====
+function showSection(sectionId) {
+    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+    document.getElementById(sectionId).classList.add('active');
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    document.querySelector(`.nav-link[data-section="${sectionId}"]`).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    if (sectionId === 'puzzles') loadPuzzle();
+    if (sectionId === 'home') renderFeatured();
+    if (sectionId === 'videos') renderVideos('all');
+    if (sectionId === 'songs') renderSongs('all');
+    if (sectionId === 'edu') renderEdu('all');
+}
+
+// ===== VIDEO RENDERING =====
+function createVideoCard(video) {
+    return `
+        <div class="video-card" onclick="openVideo('${video.id}', '${video.title}', '${video.desc}', '${video.url}')">
+            <div class="video-thumbnail">
+                <img src="${video.thumbnail}" alt="${video.title}" onerror="this.src='https://via.placeholder.com/640x360/4CAF50/FFFFFF?text=AZM+Kids'">
+                <div class="play-overlay"><div class="play-btn"><i class="fas fa-play"></i></div></div>
+                <span class="video-duration">${video.duration}</span>
+            </div>
+            <div class="video-info">
+                <div class="video-title">${video.title}</div>
+                <div class="video-meta"><span><i class="fas fa-eye"></i> ${video.views}</span><span><i class="fas fa-clock"></i> ${video.duration}</span></div>
+                <span class="video-tag ${video.tagClass}">${video.tag}</span>
+            </div>
+        </div>
+    `;
+}
+
+async function renderFeatured() {
+    document.getElementById('featured-loading').classList.add('active');
+    await loadVideosFromSupabase();
+    document.getElementById('featured-loading').classList.remove('active');
+    const featured = allVideos.slice(0, 6);
+    document.getElementById('featured-videos').innerHTML = featured.map(createVideoCard).join('');
+}
+
+async function renderVideos(filter) {
+    document.getElementById('videos-loading').classList.add('active');
+    await loadVideosFromSupabase();
+    document.getElementById('videos-loading').classList.remove('active');
+    let filtered = filter === 'all' ? allVideos : allVideos.filter(v => v.category === filter);
+    document.getElementById('all-videos').innerHTML = filtered.map(createVideoCard).join('');
+}
+
+function filterVideos(category) {
+    document.querySelectorAll('#videos .filter-tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    renderVideos(category);
+}
+
+function renderSongs(filter) {
+    document.getElementById('songs-loading').classList.add('active');
+    setTimeout(() => {
+        document.getElementById('songs-loading').classList.remove('active');
+        let filtered = filter === 'all' ? allSongs : allSongs.filter(s => s.subcategory === filter);
+        document.getElementById('songs-grid').innerHTML = filtered.map(createVideoCard).join('');
+    }, 500);
+}
+
+function filterSongs(category) {
+    document.querySelectorAll('#songs .filter-tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    renderSongs(category);
+}
+
+function renderEdu(filter) {
+    document.getElementById('edu-loading').classList.add('active');
+    setTimeout(() => {
+        document.getElementById('edu-loading').classList.remove('active');
+        let filtered = filter === 'all' ? allEdu : allEdu.filter(e => e.subcategory === filter);
+        document.getElementById('edu-grid').innerHTML = filtered.map(createVideoCard).join('');
+    }, 500);
+}
+
+function filterEdu(category) {
+    document.querySelectorAll('#edu .filter-tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    renderEdu(category);
+}
+
+// ===== VIDEO PLAYER =====
+function openVideo(id, title, desc, url) {
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-desc').textContent = desc;
+    document.getElementById('video-iframe').src = url + '?autoplay=1';
+    document.getElementById('video-modal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    document.getElementById('video-modal').classList.remove('active');
+    document.getElementById('video-iframe').src = '';
+    document.body.style.overflow = 'auto';
+}
+
+// ===== PUZZLES =====
+function loadPuzzle() {
+    if (currentPuzzle >= puzzles.length) {
+        document.getElementById('puzzle-question').innerHTML = '🎉 مبروك! لقد أكملت جميع الأسئلة!<br>نقاطك النهائية: ' + score + ' من ' + puzzles.length;
+        document.getElementById('puzzle-options').innerHTML = '';
+        document.getElementById('puzzle-next').style.display = 'none';
+        createConfetti();
+        return;
+    }
+    const p = puzzles[currentPuzzle];
+    document.getElementById('question-num').textContent = currentPuzzle + 1;
+    document.getElementById('score-value').textContent = score;
+    document.getElementById('puzzle-question').textContent = p.question;
+    document.getElementById('puzzle-options').innerHTML = p.options.map((opt, i) => 
+        `<button class="puzzle-option" onclick="checkAnswer(${i})">${opt}</button>`
+    ).join('');
+    document.getElementById('puzzle-next').style.display = 'none';
+}
+
+function checkAnswer(selected) {
+    const p = puzzles[currentPuzzle];
+    const options = document.querySelectorAll('.puzzle-option');
+    options.forEach((opt, i) => {
+        opt.disabled = true;
+        if (i === p.correct) opt.classList.add('correct');
+        else if (i === selected) opt.classList.add('wrong');
+    });
+    if (selected === p.correct) {
+        score++;
+        document.getElementById('score-value').textContent = score;
+        createConfetti();
+    }
+    document.getElementById('puzzle-next').style.display = 'block';
+}
+
+function nextPuzzle() {
+    currentPuzzle++;
+    loadPuzzle();
+}
+
+function createConfetti() {
+    const colors = ['#FF6B35', '#4ECDC4', '#9B5DE5', '#FFE66D', '#F15BB5', '#00BBF9', '#4CAF50'];
+    for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 4000);
+    }
+}
+
+// ===== ADD VIDEO =====
+async function addVideo() {
+    const title = document.getElementById('video-title').value;
+    const url = document.getElementById('video-url').value;
+    const category = document.getElementById('video-category').value;
+    const desc = document.getElementById('video-desc').value;
+
+    if (!title || !url) {
+        alert('الرجاء إدخال العنوان والرابط!');
+        return;
+    }
+
+    let videoId = extractVideoId(url);
+    if (!videoId) {
+        alert('رابط يوتيوب غير صالح!');
+        return;
+    }
+
+    const newVideo = {
+        id: 'u' + Date.now(),
+        title: title,
+        url: 'https://www.youtube.com/embed/' + videoId,
+        thumbnail: 'https://img.youtube.com/vi/' + videoId + '/maxresdefault.jpg',
+        category: category,
+        tag: category === 'edu' ? 'تعليمي' : category === 'song' ? 'أغاني' : category === 'game' ? 'ألعاب' : 'ترفيه',
+        tagClass: 'tag-' + category,
+        duration: 'جديد',
+        views: '0',
+        desc: desc || 'فيديو مضاف حديثاً'
+    };
+
+    // Try to save to Supabase
+    if (isSupabaseConnected) {
+        const saved = await saveVideoToSupabase(newVideo);
+        if (saved) {
+            allVideos.unshift(newVideo);
+        }
+    } else {
+        // Save to localStorage as fallback
+        let localVideos = JSON.parse(localStorage.getItem('azm_videos') || '[]');
+        localVideos.unshift(newVideo);
+        localStorage.setItem('azm_videos', JSON.stringify(localVideos));
+        allVideos.unshift(newVideo);
+    }
+
+    document.getElementById('success-msg').classList.add('show');
+    document.getElementById('video-title').value = '';
+    document.getElementById('video-url').value = '';
+    document.getElementById('video-desc').value = '';
+
+    setTimeout(() => {
+        document.getElementById('success-msg').classList.remove('show');
+    }, 3000);
+
+    createConfetti();
+}
+
+// Load local videos on startup
+function loadLocalVideos() {
+    const localVideos = JSON.parse(localStorage.getItem('azm_videos') || '[]');
+    if (localVideos.length > 0) {
+        allVideos = [...localVideos, ...defaultVideos];
+    }
+}
+
+// ===== EVENT LISTENERS =====
+document.getElementById('video-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeModal();
+});
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', function() {
+    loadLocalVideos();
+    renderFeatured();
+    renderVideos('all');
+    renderSongs('all');
+    renderEdu('all');
+});
+</script>
+</body>
+</html>
